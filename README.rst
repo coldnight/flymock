@@ -16,7 +16,7 @@ Installation
 
 .. codeblock:: shell
 
-   $ pip install --upgrade flymock
+    $ pip install --upgrade flymock
 
 Create mock data
 ----------------
@@ -25,27 +25,27 @@ Make a directory in your tests package:
 
 .. codeblock:: shell
 
-   $ mkdir __mock__
+    $ mkdir __mock__
 
 Use the hostname as the config filename, assume the url is ``http://example.com/demo``,
 the config filename should be ``example.com.yaml``, the config see below:
 
 .. codeblock:: yaml
 
-   - path: /demo    # path of the request to match
-     method: GET    # method of the request to match
-     headers:       # Response headers
-       Content-Type: application/json
-     body: Hello world # Response body
-     code: 200      # Response status code
+    - path: /demo    # path of the request to match
+      method: GET    # method of the request to match
+      headers:       # Response headers
+        Content-Type: application/json
+      body: Hello world # Response body
+      code: 200      # Response status code
 
-   - path: /file
-     body_type: file     # Use a file content as the response
-     body: demo.json     # Filename(same path of the config file)
-     code: 202
+    - path: /file
+      body_type: file     # Use a file content as the response
+      body: demo.json     # Filename(same path of the config file)
+      code: 202
 
-   - path: /json
-     body:               # If body is an object, that will response JSON content.
+    - path: /json
+      body:               # If body is an object, that will response JSON content.
        code: 2
 
 
@@ -54,27 +54,27 @@ Usage
 
 .. codeblock:: python
 
-   import os
+    import os
 
-   from tornado import httpclient
-   from tornado import testing
+    from tornado import httpclient
+    from tornado import testing
 
-   from flymock import FlyPatcher
+    from flymock import FlyPatcher
 
 
-   class DemoTestCase(testing.AsyncTestCase):
-       def setUp(self):
-           super(DemoTestCase, self).setUp()
-           path = os.path.join(os.path.dirname(__file__), "__mock__")
-           self.patcher = FlyPatcher(path)
-           self.http_client = httpclient.AsyncHTTPClient()
-           self.patcher.start()
+    class DemoTestCase(testing.AsyncTestCase):
+        def setUp(self):
+            super(DemoTestCase, self).setUp()
+            path = os.path.join(os.path.dirname(__file__), "__mock__")
+            self.patcher = FlyPatcher(path)
+            self.http_client = httpclient.AsyncHTTPClient()
+            self.patcher.start()
 
-       def tearDown(self):
-           super(DemoTestCase, self).tearDown()
-           self.patcher.stop()
+        def tearDown(self):
+            super(DemoTestCase, self).tearDown()
+            self.patcher.stop()
 
-       @testing.gen_test
-       def test_mocked(self):
-           resp = yield self.http_client.fetch("http://example.com/demo")
-           self.assertEqual(resp.code, 200)
+        @testing.gen_test
+        def test_mocked(self):
+            resp = yield self.http_client.fetch("http://example.com/demo")
+            self.assertEqual(resp.code, 200)
