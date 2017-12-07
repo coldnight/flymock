@@ -1,0 +1,4 @@
+- path: /coldnight/flymock
+  headers:
+    Content-Type: application/json
+  body: github.json

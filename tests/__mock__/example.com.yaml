@@ -1,0 +1,14 @@
+- path: /demo
+  headers:
+    Content-Type: application/json
+  body: demo.json
+  code: 200
+
+- path: /file
+  body_type: file
+  body: demo.json
+  code: 202
+
+- path: /json
+  body:
+    code: 2
