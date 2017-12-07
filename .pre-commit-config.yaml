@@ -1,0 +1,34 @@
+-   repo: git@github.com:pre-commit/pre-commit-hooks.git
+    sha: v0.8.0
+    hooks:
+    -   id: flake8
+-   repo: git@github.com:coldnight/pre-commit-pylint.git
+    sha: v0.0.2
+    hooks:
+    -   id: pylint-py3k
+    -   id: pylint-score-limit
+        args:
+        - --limit=8.5
+        - --rcfile=./.pylintrc
+-   repo: https://github.com/asottile/reorder_python_imports
+    sha: v0.3.5
+    hooks:
+    -   id: reorder-python-imports
+        language_version: python2.7
+        args:
+        - --separate-relative
+        - --separate-from-import
+        - --add-import
+        - from __future__ import absolute_import
+        - --add-import
+        - from __future__ import division
+        - --add-import
+        - from __future__ import print_function
+        - --add-import
+        - from __future__ import unicode_literals
+        - --remove-import
+        - from __future__ import with_statement
+-   repo: https://github.com/asottile/pyupgrade
+    sha: v1.1.1
+    hooks:
+    -   id: pyupgrade
