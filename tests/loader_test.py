@@ -23,7 +23,7 @@ class LoaderTestCase(unittest.TestCase):
 
     def test_response(self):
         """Use url to get mocked response."""
-        resp = self.loader.get_response("http://example.com/demo")
+        resp = self.loader.find_response("http://example.com/demo")
         self.assertEqual(resp.code, 200)
         self.assertEqual(resp.method, "GET")
         self.assertDictEqual(
@@ -31,9 +31,17 @@ class LoaderTestCase(unittest.TestCase):
         )
         self.assertEqual(resp.body, b"demo.json")
 
+    def test_no_response(self):
+        """No response found."""
+        resp = self.loader.find_response("http://example.com/404")
+        self.assertIsNone(resp)
+
+        resp = self.loader.find_response("http://a.b.c/404")
+        self.assertIsNone(resp)
+
     def test_response_with_file_body(self):
         """Use file as response's body."""
-        resp = self.loader.get_response("http://example.com/file")
+        resp = self.loader.find_response("http://example.com/file")
         self.assertEqual(resp.code, 202)
         self.assertEqual(resp.method, "GET")
         self.assertDictEqual(resp.headers, {})
@@ -41,7 +49,7 @@ class LoaderTestCase(unittest.TestCase):
 
     def test_response_with_json(self):
         """JSON format response body"""
-        resp = self.loader.get_response("http://example.com/json")
+        resp = self.loader.find_response("http://example.com/json")
         self.assertEqual(resp.body, b'{"code": 2}')
         self.assertEqual(
             resp.headers,

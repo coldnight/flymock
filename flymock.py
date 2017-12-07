@@ -7,11 +7,18 @@ Directory structure of mock data:
 
 """
 import glob
+import importlib
 import json
 import os
 
+from io import BytesIO
+
+import mock
 import six
 import yaml
+
+from tornado import concurrent
+from tornado import httpclient
 
 from six.moves.urllib import parse as urlparse
 
@@ -115,7 +122,7 @@ class Loader(object):
             results.append(item)
         return results
 
-    def get_response(self, url, method="GET"):
+    def find_response(self, url, method="GET"):
         """Returns mocked response with url. Returns None if not matched any
         data.
         """
@@ -138,6 +145,56 @@ class Loader(object):
         return None
 
 
-class FlyMock(object):
-    def __init__(self, data_dir):
-        pass
+class FlyPatcher(object):
+    """Mock :method:`tornado.httpclient.HTTPClient.fetch` on fly."""
+    def __init__(self, data_dir, fetch_spec=None):
+        """Initialize
+
+        :param data_dir: Mock data directory.
+        :param fetch_spec:
+
+            Spec of fetch, default: tornado.httpclient.AsyncHTTPClient.fetch
+        """
+        self.loader = Loader(data_dir)
+
+        if fetch_spec is None:
+            fetch_spec = "tornado.httpclient.AsyncHTTPClient.fetch"
+
+        _spec_parts = fetch_spec.split(".")
+        module = importlib.import_module('.'.join(_spec_parts[:2]))
+
+        self._original = getattr(
+            getattr(module, _spec_parts[2]), _spec_parts[3],
+        )
+        self.patcher = mock.patch(
+            fetch_spec, side_effect=self.mock_fetch, autospec=True,
+        )
+
+    def start(self):
+        self.patcher.start()
+
+    def stop(self):
+        self.patcher.stop()
+
+    def mock_fetch(self, ins, request, **kwargs):
+        """Mock fetch."""
+        if isinstance(request, (six.binary_type, six.text_type)):
+            request = httpclient.HTTPRequest(request, **kwargs)
+
+        url = request.url
+        method = request.method
+
+        response = self.loader.find_response(url, method)
+        if response is None:
+            return self._original(ins, request, **kwargs)
+
+        ret = httpclient.HTTPResponse(
+            request,
+            response.code,
+            response.headers or None,
+            BytesIO(response.body),
+            response.url,
+        )
+        future = concurrent.Future()
+        future.set_result(ret)
+        return future
