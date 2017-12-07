@@ -69,7 +69,10 @@ class Response(object):
 
         new_headers = {}
         for k, v in headers.items():
-            key = "--".join(map(lambda x: x.title(), k.split("-")))
+            key = "-".join(map(lambda x: x.title(), k.split("-")))
+            if isinstance(v, six.binary_type):
+                v = v.decode('utf8')
+
             new_headers[key] = v
 
         return cls(url, code, method, body, new_headers)

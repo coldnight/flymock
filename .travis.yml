@@ -5,11 +5,9 @@ python:
 env:
     matrix:
         - TOXENV=py27
-        - TOXENV=py33
         - TOXENV=py34
         - TOXENV=py36
-        - TOXENV=flake8
-        - TOXENV=pylint
+        - TOXENV=lint
 
 install:
     - pip install tox
@@ -25,4 +23,8 @@ matrix:
   include:
       - python: 3.5
         env:
-            - TOXENV=py35
+          - TOXENV=py35
+
+      - python: 3.3
+        env:
+          - TOXENV=py33
