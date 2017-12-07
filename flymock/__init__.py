@@ -1,5 +1,10 @@
 """Integrate with Tornado testing: mock external HTTP request.
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import glob
 import importlib
 import json
@@ -11,10 +16,9 @@ import mock
 import six
 import yaml
 
+from six.moves.urllib import parse as urlparse   # pylint: disable=E0401
 from tornado import concurrent
 from tornado import httpclient
-
-from six.moves.urllib import parse as urlparse
 
 
 class Response(object):
@@ -65,8 +69,7 @@ class Response(object):
 
         new_headers = {}
         for k, v in headers.items():
-            key_parts = map(lambda x: x.title(), k.split("-"))
-            key = "-".join(key_parts)
+            key = "--".join(map(lambda x: x.title(), k.split("-")))
             new_headers[key] = v
 
         return cls(url, code, method, body, new_headers)
