@@ -60,7 +60,7 @@ class Response(object):
         """Use given ``data`` to patch the response body, if body is not a JSON
         string, raises a :exception:`ValueError`.
         """
-        body_data = json.loads(self.body)
+        body_data = json.loads(escape.to_unicode(self.body))
         body_data.update(data)
         self.body = escape.utf8(json.dumps(body_data))
 
