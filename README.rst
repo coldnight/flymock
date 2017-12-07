@@ -14,7 +14,7 @@ Easy to mock external HTTP request in Tornado.
 Installation
 ------------
 
-.. codeblock:: shell
+.. code-block:: shell
 
     $ pip install --upgrade flymock
 
@@ -23,14 +23,14 @@ Create mock data
 
 Make a directory in your tests package:
 
-.. codeblock:: shell
+.. code-block:: shell
 
     $ mkdir __mock__
 
 Use the hostname as the config filename, assume the url is ``http://example.com/demo``,
 the config filename should be ``example.com.yaml``, the config see below:
 
-.. codeblock:: yaml
+.. code-block:: yaml
 
     - path: /demo    # path of the request to match
       method: GET    # method of the request to match
@@ -52,7 +52,7 @@ the config filename should be ``example.com.yaml``, the config see below:
 Usage
 -----
 
-.. codeblock:: python
+.. code-block:: python
 
     import os
 
