@@ -1,8 +1,8 @@
--   repo: git@github.com:pre-commit/pre-commit-hooks.git
+-   repo: https://github.com/pre-commit/pre-commit-hooks.git
     sha: v0.8.0
     hooks:
     -   id: flake8
--   repo: git@github.com:coldnight/pre-commit-pylint.git
+-   repo: https://github.com/coldnight/pre-commit-pylint.git
     sha: v0.0.2
     hooks:
     -   id: pylint-py3k
