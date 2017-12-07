@@ -21,6 +21,9 @@ from tornado import concurrent
 from tornado import httpclient
 
 
+__version = "0.0.0"
+
+
 class Response(object):
     """Represents a mocked response load from config file.
 
