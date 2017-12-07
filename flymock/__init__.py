@@ -1,10 +1,4 @@
 """Integrate with Tornado testing: mock external HTTP request.
-
-Create mock data
-----------------
-
-Directory structure of mock data:
-
 """
 import glob
 import importlib
