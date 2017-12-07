@@ -32,6 +32,18 @@ class FlyPatcherTestCase(testing.AsyncTestCase):
         self.assertEqual(resp.body, b"demo.json")
 
     @testing.gen_test
+    def test_patch_json(self):
+        """Dynmatic hook to adjust response."""
+        resp = yield self.http_client.fetch("http://example.com/json")
+        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.body, b'{"code": 2}')
+
+        with self.patcher.patch_json({"code": 3}):
+            resp = yield self.http_client.fetch("http://example.com/json")
+            self.assertEqual(resp.code, 200)
+            self.assertEqual(resp.body, b'{"code": 3}')
+
+    @testing.gen_test
     def test_not_mocked(self):
         """Not mocked fetch."""
         resp = yield self.http_client.fetch("https://github.com")

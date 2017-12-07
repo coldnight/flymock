@@ -78,3 +78,21 @@ Usage
         def test_mocked(self):
             resp = yield self.http_client.fetch("http://example.com/demo")
             self.assertEqual(resp.code, 200)
+
+
+Adjust response dynamic:
+
+.. code-block:: python
+
+    patcher = FlyPatcher("/path/to/__mock__")
+    def hook(response):
+       response.patch_json({"a": 1})
+
+    with patcher.dynamic_hook(hook):
+        # code goes here
+        pass
+
+    # shortcut to adjust JSON
+    with patcher.patch_json({"a": 1}):
+       # code goes here
+       pass

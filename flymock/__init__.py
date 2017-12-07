@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import contextlib
 import glob
 import importlib
 import json
@@ -18,6 +19,7 @@ import yaml
 
 from six.moves.urllib import parse as urlparse   # pylint: disable=E0401
 from tornado import concurrent
+from tornado import escape
 from tornado import httpclient
 
 
@@ -54,6 +56,14 @@ class Response(object):
         self.body = body
         self.headers = headers
 
+    def patch_json(self, data):
+        """Use given ``data`` to patch the response body, if body is not a JSON
+        string, raises a :exception:`ValueError`.
+        """
+        body_data = json.loads(self.body)
+        body_data.update(data)
+        self.body = escape.utf8(json.dumps(body_data))
+
     @classmethod
     def make(cls, url, code, method, body_type, body, headers):
         """Make a Response."""
@@ -67,8 +77,7 @@ class Response(object):
             )
             body = json.dumps(body)
 
-        if isinstance(body, six.text_type):
-            body = body.encode("utf8")
+        body = escape.utf8(body)
 
         new_headers = {}
         for k, v in headers.items():
@@ -173,11 +182,53 @@ class FlyPatcher(object):
             fetch_spec, side_effect=self.mock_fetch, autospec=True,
         )
 
+        self._dynamic_hooks = []
+
     def start(self):
         return self.patcher.start()
 
     def stop(self):
         self.patcher.stop()
+
+    @contextlib.contextmanager
+    def dynamic_hook(self, hook):
+        """Register hook to adjust response dynamic.
+
+        Usage::
+
+            patcher = FlyPatcher("/path/to/__mock__")
+            def hook(response):
+                response.patch_json({"a": 1})
+
+            with patcher.dynamic_hook(hook):
+                # code goes here
+                pass
+
+        :param hook:
+
+           A callable object receives a argument of :class:`.Response`
+
+        :type hook: callable
+        """
+        assert callable(hook)
+        self._dynamic_hooks.append(hook)
+        yield
+        self._dynamic_hooks.remove(hook)
+
+    def patch_json(self, data):
+        """Use ``data`` to patch response body, if response body is not JSON
+        content that will raise a :exception:`ValueError`.
+
+        Usage::
+
+            patcher = FlyPatcher("/path/to/__mock__")
+            with patcher.patch_json({"a": 1}):
+                # code goes here
+                pass
+        """
+        def hook(response):
+            response.patch_json(data)
+        return self.dynamic_hook(hook)
 
     def mock_fetch(self, ins, request, **kwargs):
         """Mock fetch."""
@@ -191,6 +242,9 @@ class FlyPatcher(object):
         if response is None:
             return self._original(ins, request, **kwargs)
 
+        for hook in self._dynamic_hooks:
+            hook(response)
+
         ret = httpclient.HTTPResponse(
             request,
             response.code,
@@ -198,6 +252,7 @@ class FlyPatcher(object):
             BytesIO(response.body),
             response.url,
         )
+
         future = concurrent.Future()
         future.set_result(ret)
         return future
