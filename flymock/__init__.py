@@ -174,7 +174,7 @@ class FlyPatcher(object):
         )
 
     def start(self):
-        self.patcher.start()
+        return self.patcher.start()
 
     def stop(self):
         self.patcher.stop()
