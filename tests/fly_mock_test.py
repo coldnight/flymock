@@ -49,3 +49,12 @@ class FlyPatcherTestCase(testing.AsyncTestCase):
         resp = yield self.http_client.fetch("https://github.com")
         self.assertEqual(resp.code, 200)
         self.assertIn(b"GitHub", resp.body)
+
+    @testing.gen_test
+    def test_request_ok(self):
+        """Use :class:`tornado.httpclient.HTTPRequest` as argument."""
+        resp = yield self.http_client.fetch(
+            httpclient.HTTPRequest('http://example.com/json'),
+        )
+        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.body, b'{"code": 2}')
