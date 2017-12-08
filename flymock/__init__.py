@@ -212,8 +212,10 @@ class FlyPatcher(object):
         """
         assert callable(hook)
         self._dynamic_hooks.append(hook)
-        yield
-        self._dynamic_hooks.remove(hook)
+        try:
+            yield
+        finally:
+            self._dynamic_hooks.remove(hook)
 
     def patch_json(self, data):
         """Use ``data`` to patch response body, if response body is not JSON
