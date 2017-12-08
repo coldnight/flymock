@@ -22,6 +22,9 @@ class DemoHandler(web.RequestHandler):
         )
         self.write(resp.body)
 
+    def delete(self):
+        self.set_status(204)
+
 
 class IntegrateTestCase(testing.AsyncHTTPTestCase):
     """Integrate with asynchronous HTTP server."""
@@ -46,3 +49,8 @@ class IntegrateTestCase(testing.AsyncHTTPTestCase):
         """Ok with fetch."""
         resp = self.fetch("/demo")
         self.assertEqual(resp.body, b"demo.json")
+
+    def test_kwargs(self):
+        """Keyword arguments is ok with fetch."""
+        resp = self.fetch("/demo", method="DELETE")
+        self.assertEqual(resp.code, 204)

@@ -235,10 +235,13 @@ class FlyPatcher(object):
     def mock_fetch(self, ins, request, *args, **kwargs):
         """Mock fetch."""
         if isinstance(request, (six.binary_type, six.text_type)):
-            request = httpclient.HTTPRequest(request, **kwargs)
+            _request = httpclient.HTTPRequest(request, **kwargs)
 
-        url = request.url
-        method = request.method
+            url = _request.url
+            method = _request.method
+        else:
+            url = request.url
+            method = request.method
 
         response = self.loader.find_response(url, method)
         if response is None:
