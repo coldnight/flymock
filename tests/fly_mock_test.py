@@ -16,7 +16,9 @@ class FlyPatcherTestCase(testing.AsyncTestCase):
     def setUp(self):
         super(FlyPatcherTestCase, self).setUp()
         path = os.path.join(os.path.dirname(__file__), "__mock__")
-        self.patcher = FlyPatcher(path)
+        self.patcher = FlyPatcher(
+            path, 'tornado.httpclient.AsyncHTTPClient.fetch',
+        )
         self.http_client = httpclient.AsyncHTTPClient()
         self.patcher.start()
 

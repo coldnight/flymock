@@ -83,7 +83,7 @@ class Response(object):
         for k, v in headers.items():
             key = "-".join(map(lambda x: x.title(), k.split("-")))
             if isinstance(v, six.binary_type):
-                v = v.decode('utf8')
+                v = v.decode('utf8')   # pragma: no cover
 
             new_headers[key] = v
 
