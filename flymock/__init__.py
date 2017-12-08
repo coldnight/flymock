@@ -235,7 +235,7 @@ class FlyPatcher(object):
     def mock_fetch(self, ins, request, *args, **kwargs):
         """Mock fetch."""
         if isinstance(request, (six.binary_type, six.text_type)):
-            request = httpclient.HTTPRequest(request, *args, **kwargs)
+            request = httpclient.HTTPRequest(request, **kwargs)
 
         url = request.url
         method = request.method
