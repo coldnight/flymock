@@ -232,17 +232,17 @@ class FlyPatcher(object):
             response.patch_json(data)
         return self.dynamic_hook(hook)
 
-    def mock_fetch(self, ins, request, **kwargs):
+    def mock_fetch(self, ins, request, *args, **kwargs):
         """Mock fetch."""
         if isinstance(request, (six.binary_type, six.text_type)):
-            request = httpclient.HTTPRequest(request, **kwargs)
+            request = httpclient.HTTPRequest(request, *args, **kwargs)
 
         url = request.url
         method = request.method
 
         response = self.loader.find_response(url, method)
         if response is None:
-            return self._original(ins, request, **kwargs)
+            return self._original(ins, request, *args, **kwargs)
 
         for hook in self._dynamic_hooks:
             hook(response)
