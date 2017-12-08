@@ -23,7 +23,7 @@ from tornado import escape
 from tornado import httpclient
 
 
-__version = "0.0.3"
+__version = "0.0.4"
 
 
 class Response(object):
