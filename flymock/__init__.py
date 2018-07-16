@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
+import copy
 import glob
 import importlib
 import json
@@ -235,7 +236,9 @@ class FlyPatcher(object):
     def mock_fetch(self, ins, request, *args, **kwargs):
         """Mock fetch."""
         if isinstance(request, (six.binary_type, six.text_type)):
-            _request = httpclient.HTTPRequest(request, **kwargs)
+            kwargs_copy = copy.deepcopy(kwargs)
+            kwargs_copy.pop("raise_error")  # Add in Tornado 5.1
+            _request = httpclient.HTTPRequest(request, **kwargs_copy)
 
             url = _request.url
             method = _request.method
