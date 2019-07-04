@@ -103,7 +103,7 @@ class Loader(object):
         cnfs = self._scan_hosts()
         for c in cnfs:
             with open(c, 'r') as f:
-                paths = yaml.load(f)
+                paths = yaml.safe_load(f)
 
             self._cnfs_by_host[self._get_host(c)] = [
                 {
